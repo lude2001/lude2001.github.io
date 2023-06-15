@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <title>个人博客 - </title>
+    
+      <link rel="icon" href="/img/favicon.ico">
+    
+    <meta name="keyword"  content="">
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    
+      
+<link rel="stylesheet" href="/css/helpers.css">
+    
+    
+  
+    <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+  
+
+
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+
+<body>
+  <div class="loading-wrapper" data-loading="true">
+    <div class="loading">
+      <span></span>
+      <span></span>
+      <span></span>
+    </div>
+  </div>
+  <div class="page" data-filter="true">
+    <div class="head" data-show="true">
+      <header class="head-header">
+  <div class="head-author">
+    <a href="/" class="head-author-link">
+      个人博客</a>
+    </div>
+  <div class="head-right">
+    <!-- <div class="head-search">
+      <input class="head-searchK"></input>
+      <span class="head-searchT">
+        Search</span>
+    </div> -->
+    <button class="bar-wrap" id="bar-wrap-toggle">
+      <span class="bar"></span>
+      <span class="bar"></span>
+      <span class="bar"></span>
+    </button>
+    <div class="head-about" id="head-about">
+      
+      <a class="head-about-link" href="/about">
+        关于</a>
+      
+    </div>
+  </div>
+</header>
+
+    </div>
+    <div class="main">
+      
+
+<div class="menu-bar-head" id="menu-bar" data-show="false">
+  <ul class="menu-bar-ul">
+    
+      
+      <li class="menu-bar-item ">
+          
+              <a href="/categories/%E5%89%8D%E7%AB%AF/">
+          
+              <span>前端</span>
+            </a>
+      </li>
+    
+      
+      <li class="menu-bar-item ">
+          
+              <a href="/categories/%E5%90%8E%E7%AB%AF/">
+          
+              <span>后端</span>
+            </a>
+      </li>
+    
+      
+      <li class="menu-bar-item  border ">
+          
+            <a href="/archives">
+          
+              <span>归档</span>
+            </a>
+      </li>
+    
+      
+      <li class="menu-bar-item ">
+          
+            <a href="/tags">
+          
+              <span>标签</span>
+            </a>
+      </li>
+    
+    
+      <li class="menu-bar-item">
+        <a href="/about">
+          <span>关于</span>
+        </a>
+      </li>
+    
+  </ul>
+</div>
+      <article class="post" id="post">
+  <header class="post-head">
+    <h1 class="post-title">
+      <a class="title" href="/2023/06/06/spark-alone-installation/">
+        spark-alone installation
+      </a>
+    </h1>
+  </header>
+  <div class="post-datetag">
+    <div class="post-date">
+      <time class="post-time" title="2023-06-06 21:36:12" datetime="2023-06-06T13:36:12.000Z" itemprop="datePublished">
+  2023-06-06</time>
+    </div>
+    |
+    <div class="post-tag">
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/docker/" rel="tag">docker</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/spark/" rel="tag">spark</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/standalone/" rel="tag">standalone</a></li></ul>
+
+    </div>
+    |
+    
+  
+
+    <div class="post-visit">
+      <span id="busuanzi_container_page_pv">
+        <span id="busuanzi_value_page_pv"></span>
+        访问
+      </span>
+    </div>
+
+  
+
+
+  </div>
+
+  
+    <div class="post-word-count">
+      
+
+本文共657字。
+
+    </div>
+  
+
+  
+    <div class="post-cc">
+      版权声明：
+      
+        by lude | <a href="">----------</a>
+      
+    </div>
+  
+
+  
+
+
+  <div class="article-entry" itemprop="articleBody">
+    <table>
+<thead>
+<tr>
+<th align="center"><a name="z01"></a>问题设计</th>
+<th><p><strong>Standalone模式</strong></p><p>Standalone模式是使用Spark自身节点运行的集群模式，也就是我们所谓的独立部署(Standalone)模式。Spark的Standalone模式体现了经典的master-slave模式。</p><p>集群规划:</p><p>	</p><p>本次演示使用docker配置spark-stand-alone，可以省取大量繁杂的配置变量的细节，如果对变量或者因素有修正，在docker容器管理中全局修改即可，减少了虚拟机从查找-更新之类繁琐的流程。</p><p></p><p>1． <strong>镜像制作</strong></p><p>(1)部署前言</p><p>为了模拟 Spark 集群，采取一主二从的部署方式，使用 Docker Compose 对容器集群进行统一编排管理。</p><p>首先，在本地新建一个工作目录,在该目录下编写 docker-compose.yml 配置文件。对于原生镜像的修改，包括：</p><p>- hostname：容器实例主机名；</p><p>- volumes：挂载本地目录 ~&#x2F;docker&#x2F;spark&#x2F;share 到容器目录 &#x2F;opt&#x2F;share；</p><p>- ports：开放 4040 和从节点 Spark Web UI 端口。</p><p></p><p>将装有hadoop的集群镜像直接拉取，并给他们分配到同一network，直接使用deocker-compose.yml的方式进行制作。</p><p></p><p></p><p><strong>2.镜像检查</strong></p><p>**(1)<strong>编写配置文件</strong></p><p>如下分配端口</p><p></p><p>docker-compose.yml文件</p><p>version: ‘2’</p><p></p><p>services:</p><p><code>  </code>spark:</p><p><code>    </code>image: s1mplecc&#x2F;spark-hadoop:3</p><p><code>    </code>hostname: master</p><p><code>    </code>environment:</p><p><code>      </code>- SPARK_MODE&#x3D;master</p><p><code>      </code>- SPARK_RPC_AUTHENTICATION_ENABLED&#x3D;no</p><p><code>      </code>- SPARK_RPC_ENCRYPTION_ENABLED&#x3D;no</p><p><code>      </code>- SPARK_LOCAL_STORAGE_ENCRYPTION_ENABLED&#x3D;no</p><p><code>      </code>- SPARK_SSL_ENABLED&#x3D;no</p><p><code>    </code>volumes:</p><p><code>      </code>- ~&#x2F;docker&#x2F;spark&#x2F;share:&#x2F;opt&#x2F;share</p><p><code>    </code>ports:</p><p><code>      </code>- ‘8080:8080’</p><p><code>      </code>- ‘4040:4040’</p><p><code>      </code>- ‘8088:8088’</p><p><code>      </code>- ‘8042:8042’</p><p><code>      </code>- ‘9870:9870’</p><p><code>      </code>- ‘19888:19888’</p><p><code>  </code>spark-worker-1:</p><p><code>    </code>image: s1mplecc&#x2F;spark-hadoop:3</p><p><code>    </code>hostname: worker1</p><p><code>    </code>environment:</p><p><code>      </code>- SPARK_MODE&#x3D;worker</p><p><code>      </code>- SPARK_MASTER_URL&#x3D;spark:&#x2F;&#x2F;master:7077</p><p><code>      </code>- SPARK_WORKER_MEMORY&#x3D;1G</p><p><code>      </code>- SPARK_WORKER_CORES&#x3D;1</p><p><code>      </code>- SPARK_RPC_AUTHENTICATION_ENABLED&#x3D;no</p><p><code>      </code>- SPARK_RPC_ENCRYPTION_ENABLED&#x3D;no</p><p><code>      </code>- SPARK_LOCAL_STORAGE_ENCRYPTION_ENABLED&#x3D;no</p><p><code>      </code>- SPARK_SSL_ENABLED&#x3D;no</p><p><code>    </code>volumes:</p><p><code>      </code>- ~&#x2F;docker&#x2F;spark&#x2F;share:&#x2F;opt&#x2F;share</p><p><code>    </code>ports:</p><p><code>      </code>- ‘8081:8081’</p><p><code>  </code>spark-worker-2:</p><p><code>    </code>image: s1mplecc&#x2F;spark-hadoop:3</p><p><code>    </code>hostname: worker2</p><p><code>    </code>environment:</p><p><code>      </code>- SPARK_MODE&#x3D;worker</p><p><code>      </code>- SPARK_MASTER_URL&#x3D;spark:&#x2F;&#x2F;master:7077</p><p><code>      </code>- SPARK_WORKER_MEMORY&#x3D;1G</p><p><code>      </code>- SPARK_WORKER_CORES&#x3D;1</p><p><code>      </code>- SPARK_RPC_AUTHENTICATION_ENABLED&#x3D;no</p><p><code>      </code>- SPARK_RPC_ENCRYPTION_ENABLED&#x3D;no</p><p><code>      </code>- SPARK_LOCAL_STORAGE_ENCRYPTION_ENABLED&#x3D;no</p><p><code>      </code>- SPARK_SSL_ENABLED&#x3D;no</p><p><code>    </code>volumes:</p><p><code>      </code>- ~&#x2F;docker&#x2F;spark&#x2F;share:&#x2F;opt&#x2F;share</p><p><code>    </code>ports:</p><p><code>      </code>- ‘8082:8081’</p><p></p><p></p><p>(2)检查引用的工具包</p><p><strong>3.启动集群</strong></p><p>(1)启动</p><p>在当前工作目录下启动集群,yml文件放在那个目录就在那个目录下启动</p><p>docker-compose up -d </p><p><br>(2)查看网络频段。</p><p>默认情况下，通过 docker-compose 启动的容器集群，会创建并使用名为 镜像名_default 的桥接网络，如 spark_default。集群内的容器处于同一子网网段，因此可以相互通信。</p><p></p><p></p><p>(3)启动hadoop集群</p><p>启动容器集群后，进入 master 容器执行启动脚本(使用的是vscode的docker管理插件):</p><p>.&#x2F;start-hadoop.sh</p><p></p><p></p><p>(4)检查hadoop</p><p>浏览器打开:<a target="_blank" rel="noopener" href="http://localhost:9870/">http://localhost:9870/</a></p><p></p></th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center"></td>
+<td><p><strong>4.集群检查</strong></p><p><strong>打开Spark Application Ui</strong></p><p></p><p>一主二从正常运行，集群无异常</p></td>
+</tr>
+</tbody></table>
+
+  </div>
+</article>
+
+    </div>
+    <footer class="footer-nav">
+      <div class="footer">
+        <div class="back-top" id="back-top" title="Back to top">
+          <i class="icon icon-chevron-bar-up"></i>
+        </div>
+        <span class="footer-msg">
+  
+
+  
+
+  
+  
+
+    <div>
+      <span id="busuanzi_container_site_pv">
+        <span id="busuanzi_value_site_pv">?</span> PV
+      </span>
+      <span id="busuanzi_container_site_uv">
+        <span id="busuanzi_value_site_uv">?</span> UV
+      </span>
+    </div>
+
+  
+
+
+
+  Copyright &copy;
+  2020
+  
+  
+    <span class="timeDivide">-</span>
+    2023
+  
+  lude.
+  Power by
+  <a href="https://hexo.io/" target="_blank" rel="external nofollow">Hexo</a>
+  and
+  <a href="https://github.com/Cerallin/hexo-theme-yuzu"
+      target="_blank" rel="external nofollow" title="v2.4">
+    Theme Yuzu</a>.
+</span>
+
+      </div>
+    </footer>
+    
+
+
+<script src="/js/clipboard/clipboard.min.js"></script>
+
+
+<script src="/js/theme.js"></script>
+
+
+<script src="/js/index.js"></script>
+
+
+
+  
+  <script>
+      expend = "展开";
+      collapse = "收起";
+  </script>
+  
+  
+<script src="/js/toc.js"></script>
+
+
+
+
+
+  </div>
+</body>
